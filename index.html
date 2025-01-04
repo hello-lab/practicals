@@ -7,13 +7,19 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap">
     <style>
+        html{
+            overflow-y: hidden;
+        }
         body {
             font-family: 'Open Sans', sans-serif;
             display: flex;
-            justify-content: center;
+            
             align-items: center;
             height: 100vh;
             margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
+            font-size: 20px; /* Increased font size */
         }
         body.dark-mode {
             background-color: #00224D;
@@ -21,18 +27,20 @@
         }
         table {
             border: solid white;
-            width: 80%;
-            margin: 20px auto;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px 0; /* Remove horizontal centering */
             border-collapse: collapse;
-            font-size: 18px;
+            font-size: 20px; /* Increased font size */
             text-align: left;
             border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0px 0px 19px 3px #violet;
+            box-shadow: 0px 0px 19px 3px #00224D;
         }
         th, td {
             padding: 12px;
             border: 1px solid #ddd;
+            word-wrap: break-word;
         }
         tr:nth-child(even) {
             background-color: #f2f2f2;
@@ -59,13 +67,21 @@
         body.dark-mode .highlight-alt2 {
             background-color: #03a9f4;
         }
-        .first-row th {
+        .first-column th, .first-column td {
             background-color: #FF204E;
             color: #ffffff;
         }
-        body.dark-mode .first-row th {
+        body.dark-mode .first-column th, body.dark-mode .first-column td {
             background-color: #FF204E;
         }
+        .fcol {
+            background-color: #FF204E;
+            color: #ffffff;
+        }
+        body.dark-mode .fcol {
+            background-color: #FF204E;
+        }
+        
     </style>
 </head>
 <body class="container dark-mode">
@@ -89,14 +105,16 @@
         function displayCSV(data) {
             const rows = data.split('\n');
             let html = '<table class="striped">';
-            rows.forEach((row, index) => {
-                const cells = row.split(',').map(cell => cell.replace(/(^"|"$)/g, '')); // Remove quotes
-                html += `<tr class="${index === 0 ? 'first-row' : ''}">`;
-                cells.forEach(cell => {
+            const headers = rows[0].split(',').map(cell => cell.replace(/(^"|"$)/g, ''));
+            const columns = headers.map((header, index) => rows.map(row => row.split(',')[index].replace(/(^"|"$)/g, '')));
+            
+            columns.forEach((column, index) => {
+                html += `<tr>`;
+                column.forEach((cell, cellIndex) => {
                     if (index === 0) {
-                        html += `<th>${cell}</th>`;
+                        html += `<th class="${cellIndex === 0 ? 'fcol' : ''}">${cell}</th>`;
                     } else {
-                        html += `<td>${cell}</td>`;
+                        html += `<td data-label="${headers[cellIndex]}" class="${cellIndex === 0 ? 'fcol' : ''}">${cell}</td>`;
                     }
                 });
                 html += '</tr>';
@@ -106,9 +124,9 @@
         }
 
         function loadCSV() {
-            const brllno = prompt('Enter BRLLNO:');
+            const brllno = prompt('Enter BOARD ROLL NO:');
             if (brllno) {
-                const url = `https://docs.google.com/spreadsheets/d/1xNPtI_fbzOx0KYQbnMwIL0v-4fImlDdTDMk19Y5Fy-c/gviz/tq?gid=1462782403&tqx=out:csv&tq=select%20%2A%20where%20A%20%3D%20${brllno}`;
+                const url = `https://docs.google.com/spreadsheets/d/1xNPtI_fbzOx0KYQbnMwIL0v-4fImlDdTDMk19Y5Fy-c/gviz/tq?gid=1462782403&tqx=out:csv&tq=select%20%2A%20where%20A%20%3D`+brllno;
                 fetchCSV(url);
             }
         }
