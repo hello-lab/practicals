@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Viewer</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        body.dark-mode {
+            background-color: #00224D;
+            color: #ffffff;
+        }
+        table {
+            border: solid white;
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            font-size: 18px;
+            text-align: left;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 0px 19px 3px #8b0511;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        body.dark-mode th {
+            background-color: #333333;
+        }
+        body.dark-mode tr {
+            background-color: #2c2c2c;
+        }
+        .highlight {
+            background-color: #ffeb3b;
+        }
+        body.dark-mode .highlight {
+            background-color: #ff9800;
+        }
+        body.dark-mode .highlight-alt {
+            background-color: #FF204E;
+        }
+        body.dark-mode .highlight-alt2 {
+            background-color: #03a9f4;
+        }
+        .first-row th {
+            background-color: #FF204E;
+            color: #ffffff;
+        }
+        body.dark-mode .first-row th {
+            background-color: #FF204E;
+        }
+    </style>
+</head>
+<body class="container dark-mode">
+    <div id="csv-content"></div>
+    <script>
+        async function fetchCSV(url) {
+            const localProxy = '';
+            try {
+                const response = await fetch(localProxy + url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.text();
+                console.log(typeof data); // Log the type of data
+                displayCSV(data);
+            } catch (error) {
+                console.error('Error fetching the CSV:', error);
+            }
+        }
+
+        function displayCSV(data) {
+            const rows = data.split('\n');
+            let html = '<table class="striped">';
+            rows.forEach((row, index) => {
+                const cells = row.split(',').map(cell => cell.replace(/(^"|"$)/g, '')); // Remove quotes
+                html += `<tr class="${index === 0 ? 'first-row' : ''}">`;
+                cells.forEach(cell => {
+                    if (index === 0) {
+                        html += `<th>${cell}</th>`;
+                    } else {
+                        html += `<td>${cell}</td>`;
+                    }
+                });
+                html += '</tr>';
+            });
+            html += '</table>';
+            document.getElementById('csv-content').innerHTML = html;
+        }
+
+        function loadCSV() {
+            const brllno = prompt('Enter BRLLNO:');
+            if (brllno) {
+                const url = `https://docs.google.com/spreadsheets/d/1xNPtI_fbzOx0KYQbnMwIL0v-4fImlDdTDMk19Y5Fy-c/gviz/tq?gid=1462782403&tqx=out:csv&tq=select%20%2A%20where%20A%20%3D%20${brllno}`;
+                fetchCSV(url);
+            }
+        }
+
+        // Example usage
+        loadCSV();
+    </script>
+       <!-- ...existing code... -->
+</body>
+</html>
