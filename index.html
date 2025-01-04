@@ -11,15 +11,13 @@
             overflow-y: hidden;
         }
         body {
-            font-family: 'Open Sans', sans-serif;
-            display: flex;
-            
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            padding: 10px;
-            box-sizing: border-box;
-            font-size: 20px; /* Increased font size */
+            font-size: 2vh;
+                display: flex;
+    background-color: #00224D;
+    color: #ffffff;
+    flex-direction: column;
+    align-items: flex-start;
+
         }
         body.dark-mode {
             background-color: #00224D;
@@ -81,13 +79,63 @@
         body.dark-mode .fcol {
             background-color: #FF204E;
         }
-        
+        #csv-content-2 table {
+            border: solid black;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px 0;
+            border-collapse: collapse;
+            font-size: 18px; /* Different font size */
+            text-align: center; /* Center text */
+            border-radius: 5px; /* Different border radius */
+            overflow: hidden;
+            box-shadow: 0px 0px 10px 2px #000000; /* Different box shadow */
+        }
+        #csv-content-2 th, #csv-content-2 td {
+            padding: 10px; /* Different padding */
+            border: 1px solid #ccc; /* Different border color */
+            word-wrap: break-word;
+        }
+        #csv-content-2 tr:nth-child(even) {
+            background-color: #e0e0e0; /* Different background color */
+        }
+        #csv-content-2 th {
+            background-color: #000000; /* Different header background color */
+            color: white;
+        }
+        body.dark-mode #csv-content-2 th {
+            background-color: #555555; /* Different dark mode header background color */
+        }
+        body.dark-mode #csv-content-2 tr {
+            background-color: #3c3c3c; /* Different dark mode row background color */
+        }
+        #csv-content-2 pre {
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px 2px #000000; /* Box shadow for the text box */
+            overflow: auto;
+            max-height: 400px; /* Limit the height of the text box */
+        }
+        body.dark-mode #csv-content-2 pre {
+            background-color: #333333;
+            color: #ffffff;
+            border: 1px solid #555555;
+        }
+        @media (min-width: 1024px) {
+            body {
+                justify-content: center;
+                align-items: center;
+            }
+        }
     </style>
 </head>
 <body class="container dark-mode">
+    <div id="csv-content-2"></div> <!-- New placeholder for second CSV data -->
     <div id="csv-content"></div>
     <script>
-        async function fetchCSV(url) {
+        async function fetchCSV(url, elementId, isText = false) {
             const localProxy = '';
             try {
                 const response = await fetch(localProxy + url);
@@ -96,13 +144,17 @@
                 }
                 const data = await response.text();
                 console.log(typeof data); // Log the type of data
-                displayCSV(data);
+                if (isText) {
+                    displayText(data, elementId);
+                } else {
+                    displayCSV(data, elementId);
+                }
             } catch (error) {
                 console.error('Error fetching the CSV:', error);
             }
         }
 
-        function displayCSV(data) {
+        function displayCSV(data, elementId) {
             const rows = data.split('\n');
             let html = '<table class="striped">';
             const headers = rows[0].split(',').map(cell => cell.replace(/(^"|"$)/g, ''));
@@ -120,20 +172,31 @@
                 html += '</tr>';
             });
             html += '</table>';
-            document.getElementById('csv-content').innerHTML = html;
+            document.getElementById(elementId).innerHTML = html;
         }
 
+        function displayText(data, elementId) {
+            const textContent = `<pre>${data}</pre>`;
+            document.getElementById(elementId).innerHTML = textContent;
+        }
+        function loadCSV2() {
+            fetchCSV('https://docs.google.com/spreadsheets/d/1h6ulgUAv5crMiaXD2zVvcSy0N6_CjZxo7ghtDO1lNHg/export?format=csv', 'csv-content-2', true);
+        }
         function loadCSV() {
             const brllno = prompt('Enter BOARD ROLL NO:');
             if (brllno) {
-                const url = `https://docs.google.com/spreadsheets/d/1xNPtI_fbzOx0KYQbnMwIL0v-4fImlDdTDMk19Y5Fy-c/gviz/tq?gid=1462782403&tqx=out:csv&tq=select%20%2A%20where%20A%20%3D`+brllno;
-                fetchCSV(url);
+                const url = `https://docs.google.com/spreadsheets/d/1xNPtI_fbzOx0KYQbnMwIL0v-4fImlDdTDMk19Y5Fy-c/gviz/tq?gid=1462782403&tqx=out:csv&tq=select%20%2A%20where%20A%20%3D` + brllno;
+                fetchCSV(url, 'csv-content');
             }
         }
 
+      
+
         // Example usage
-        loadCSV();
+        
+        loadCSV2();
+        setTimeout(loadCSV, 500);
     </script>
-       <!-- ...existing code... -->
+    <!-- ...existing code... -->
 </body>
 </html>
