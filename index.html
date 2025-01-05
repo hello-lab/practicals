@@ -182,11 +182,20 @@
         function loadCSV2() {
             fetchCSV('https://docs.google.com/spreadsheets/d/1h6ulgUAv5crMiaXD2zVvcSy0N6_CjZxo7ghtDO1lNHg/export?format=csv', 'csv-content-2', true);
         }
+         function isNumber(str) {
+    if (typeof str !== "string") return false; // we only process strings!  
+    return !isNaN(str) && !isNaN(parseFloat(str)); // use parseFloat to handle decimal numbers
+}
+
         function loadCSV() {
-            const brllno = prompt('Enter BOARD ROLL NO:');
-            if (brllno) {
-                const url = `https://docs.google.com/spreadsheets/d/1xNPtI_fbzOx0KYQbnMwIL0v-4fImlDdTDMk19Y5Fy-c/gviz/tq?gid=1462782403&tqx=out:csv&tq=select%20%2A%20where%20A%20%3D` + brllno;
-                fetchCSV(url, 'csv-content');
+            const brllno = prompt('Enter BOARD ROLL NO/FULL NAME:');
+            if (isNumber(brllno)) {
+                const url = `https://docs.google.com/spreadsheets/d/1xNPtI_fbzOx0KYQbnMwIL0v-4fImlDdTDMk19Y5Fy-c/gviz/tq?gid=1462782403&tqx=out:csv&tq=select%20%2A%20where%20A%20%3D`+brllno;
+                fetchCSV(url);
+            }
+            else{
+                const url = `https://docs.google.com/spreadsheets/d/1xNPtI_fbzOx0KYQbnMwIL0v-4fImlDdTDMk19Y5Fy-c/gviz/tq?gid=1462782403&tqx=out:csv&tq=select%20%2A%20where%20B%20%3D%22`+brllno.toUpperCase+`%22`;
+                fetchCSV(url);
             }
         }
 
